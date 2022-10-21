@@ -1,40 +1,43 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import TodoForm from './TodosForm';
 import TodoList from './TodoList';
-import TodosForm from './TodosForm';
-
-const dataList = [
-  {id:1, todo:'화장실 청소', chk:false},
-  {id:2, todo:'설거지', chk:false},
-  {id:3, todo:'퇴근', chk:false},
-  {id:4, todo:'출근', chk:false}
-]
+import styles from './Todos.module.css';
 
 const Todos = () => {
-  const [data, setData] = useState(dataList);
-  const [view, setView] = useState(false);
-  const no = useRef(data.length+1);
-  const onMod = () => {
-    setView(!view)
-  }
-  const onAdd = (text) => {
-    setData([...data, {
-      id:no.current++,
-      todo:text,
-      chk:false
-    }])
-  }
-  return (
-    <div>
-      <h1> Todos </h1>
-      {view && <TodosForm onAdd={onAdd} />}
-      <TodoList data={data} />
-      <button onClick={onMod}>
-      { 
-        view ? '수정끝' : '수정하기'
-      }
-      </button>
-    </div>
-  );
+    const no = useRef(1)
+    const [ data , setData ] = useState(
+        () => JSON.parse(localStorage.getItem('data')) || []
+    )   
+
+    useEffect( () => {
+        localStorage.setItem('data', JSON.stringify(data))
+    },[data])
+
+    const onDel = (id) => {
+        setData( data.filter( todo => todo.id !== id ))
+    }  
+    const onAdd = ( text )  => {
+      setData([
+          ...data ,
+          {
+              id: no.current++ ,
+              text ,
+              isActive: false 
+          }
+      ])
+    }    
+    const onToggle = ( id )  => {
+      setData( data.map( todo => todo.id === id ? { ...todo , isActive: !todo.isActive } : todo ))
+    }
+
+
+    return (
+        <div className={styles.Todos}>
+            <h1>일정관리앱</h1>
+            <TodoForm onAdd={onAdd} />
+            <TodoList data={data} onDel={onDel} onToggle={onToggle} />
+        </div>
+    );
 };
 
 export default Todos;
