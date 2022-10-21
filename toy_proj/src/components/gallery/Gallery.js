@@ -7,7 +7,7 @@ import { Container } from "../styled/pixastyle";
 const Gallery = () => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState(null) // eslint-disable-line no-unused-vars
   const [text, setText] = useState('cat')
 
 
